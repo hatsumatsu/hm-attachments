@@ -27,9 +27,6 @@ class hmAttachments {
         add_action( 'save_post', array( $this, 'save_meta' ) );
         add_filter( 'wp_prepare_attachment_for_js',  array( $this, 'include_image_sizes_in_JSON' ), 10, 3 );
 
-        add_filter( 'ajax_query_attachments_args', array( $this, 'modify_media_uploader_query' ) );
-
-
         // custom image size
         add_image_size( 'hm-attachments-thumbnail', 200, 200, true );
 
@@ -41,7 +38,7 @@ class hmAttachments {
         wp_enqueue_media();
 
         // Register, localize and enqueue our custom JS.
-        wp_register_script( 'hm-attachments', plugins_url( '/js/hm-attachments.js', __FILE__ ), array( 'jquery' ), 0, true );
+        wp_register_script( 'hm-attachments', plugins_url( '/js/hm-attachments.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable'  ), 0, true );
         wp_localize_script( 'hm-attachments', 'hm_attachments',
             array(
                 'title'     => __( 'Upload or Choose Your Custom Image File', 'hm-attachments' ), 
@@ -76,103 +73,91 @@ class hmAttachments {
             $this->config = array();
         }
 
+
+    }
+
+    public function get_attachments( $post_id ) {
+        $data = get_post_meta( $post_id, 'hm-attachment', false );
+
+        $attachments = array();
+        foreach( $data as $item ) {
+            $item = json_decode( $item, true );
+            $item['temp_id'] = uniqid();
+            $attachments[] = $item;
+        }
+
+        // sort by order
+        $order = array();
+        $i = 0;
+        foreach( $attachments as $attachment ) {
+            $order[$i] = $attachment['order'];
+            $i++;
+        }
+        array_multisort( $order, SORT_ASC, $attachments );
+
+        if( count( $attachments ) > 0 ) {
+            return $attachments;
+        } else {
+            return false;
+        }
+
     }
 
 
     public function render_metabox( $post ) {
-        global $post_id;
 
-        $attachments = get_posts( 
-            array(
-                'posts_per_page' => -1,
-                'post_type' => 'attachment',
-                'post_parent' => $post->ID,
-                'orderby' => 'menu_order',
-                'order' => 'ASC'
-                )
-            );
+        $attachments = $this->get_attachments( $post->ID );
+        print_r( $attachments );
 
-        // print_r( $attachments );
+        wp_nonce_field( basename( __FILE__ ), 'hm_attachments_nonce' );
+        echo '<div class="hm-attachments-posts">';
 
+        $i = 0;
         if( $attachments ) {
-
-            echo '<div class="hm-attachments-posts">';
-
-            wp_nonce_field( basename( __FILE__ ), 'hm_attachments_nonce' );
-
-            $menu_order_max = 0;
-
+    
             foreach( $attachments as $attachment ) {
-                echo '<div class="hm-attachments-post" data-id="' . esc_attr( $attachment->ID ) . '">';
 
-                echo wp_get_attachment_image( $attachment->ID, 'hm-attachments-thumbnail', true );
+                echo '<div class="hm-attachments-post" data-id="' . esc_attr( $attachment['temp_id'] ) . '">';
+                echo wp_get_attachment_image( $attachment['id'], 'hm-attachments-thumbnail', true );
+                echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][id]" value="' . $attachment['id'] . '" class="id">';
+                echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][order]" value="' . esc_attr( $i ) . '" class="order">';
 
-                // menu order
-                echo '<input type="hidden" name="hm-attachments[' . $attachment->ID . '][menu_order]" value="' . esc_attr( $attachment->menu_order ) . '" class="menu_order">';
-
-                // title
-                if( $this->config['fields']['title'] ) {
-                    echo '<label for="hm-attachments[' . $attachment->ID . '][title]">' . __( 'Title', 'hm-attachments' ) . '</label>';
-                    echo '<input type="text" name="hm-attachments[' . $attachment->ID . '][title]" value="' . esc_attr( $attachment->post_title ) . '" class="title">';
+                // fields
+                if( $this->config['fields'] ) {
+                    foreach( $this->config['fields'] as $field_id => $field_properties ) {
+                        include( 'inc/field-' . $field_properties['type'] . '.php' );
+                    }
                 } 
-
-                // caption
-                if( $this->config['fields']['caption'] ) {
-                    echo '<label for="hm-attachments[' . $attachment->ID . '][caption]">' . __( 'Caption', 'hm-attachments' ) . '</label>';
-                    echo '<input type="text" name="hm-attachments[' . $attachment->ID . '][caption]" value="' . esc_attr( $attachment->post_excerpt ) . '" class="caption">';
-                } 
-
-                // description
-                if( $this->config['fields']['description'] ) {
-                    echo '<label for="hm-attachments[' . $attachment->ID . '][description]">' . __( 'Description', 'hm-attachments' ) . '</label>';                    
-                    echo '<textarea name="hm-attachments[' . $attachment->ID . '][description]" class="description">' . esc_html( $attachment->post_content ) . '</textarea>';
-                } 
-
-                // alt text
-                if( $this->config['fields']['alt'] ) {
-                    echo '<label for="hm-attachments[' . $attachment->ID . '][meta][_wp_attachment_image_alt]">' . __( 'Alternative text', 'hm-attachments' ) . '</label>';                    
-                    $value = ( get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ) ) ? get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ) : '';
-                    echo '<input type="text" name="hm-attachments[' . $attachment->ID . '][meta][_wp_attachment_image_alt]" value="' . esc_attr( $value ) . '" class="alt">';
-                } 
-
-                // delete
-                echo '<input type="checkbox" name="hm-attachments[' . $attachment->ID . '][delete]" class="delete">';
-                
+                echo '<a href="#" class="delete-link">' . __( 'Delete', 'hm-attachments' ) . '</a>';
                 echo '</div>';
 
-                $menu_order_max = ( $attachment->menu_order > $menu_order_max ) ? $attachment->menu_order : $menu_order_max;
+                $i++;
+                // $order_max = ( $attachment['order'] > $order_max ) ? $attachment['order'] : $order_max;
             }
 
-            // placeholder
-            echo '<div class="hm-attachments-post hm-attachments-post-new hm-attachments-post-placeholder" data-id="{{id}}">';
-            echo '<img src="{{src}}">';
-            echo '<input type="hidden" class="menu_order" name="hm-attachments[{{id}}][menu_order]" value="' . ( $menu_order_max + 1 ) . '">';
-            if( $this->config['fields']['title'] ) {
-                echo '<label for="hm-attachments[{{id}}][title]">' . __( 'Title', 'hm-attachments' ) . '</label>';
-                echo '<input type="text" class="title" name="hm-attachments[{{id}}][title]" value="">';
-            } 
-            if( $this->config['fields']['caption'] ) {
-                echo '<label for="hm-attachments[{{id}}][caption]">' . __( 'Caption', 'hm-attachments' ) . '</label>';
-                echo '<input type="text" class="caption" name="hm-attachments[{{id}}][caption]" value="">';
-            } 
-            if( $this->config['fields']['description'] ) {
-                echo '<label for="hm-attachments[{{id}}][description]">' . __( 'Description', 'hm-attachments' ) . '</label>';
-                echo '<textarea class="description" name="hm-attachments[{{id}}][description]"></textarea>';
-            } 
-            if( $this->config['fields']['alt'] ) {
-                echo '<label for="hm-attachments[{{id}}][meta][_wp_attachment_image_alt]">' . __( 'Alternative text', 'hm-attachments' ) . '</label>';
-                echo '<input type="text" class="alt" name="hm-attachments[{{id}}][meta][_wp_attachment_image_alt]" value="">';
-            } 
-            echo '<input type="checkbox" name="hm-attachments[{{id}}][delete]">';
-            echo '</div>';
-            // -----
-
-            echo '</div>';
         }
 
-        // print_r( $this->config );
+        $attachment = null;
+
+        // placeholder
+        echo '<div class="hm-attachments-post hm-attachments-post-placeholder" data-id="{{temp_id}}">';
+        echo '<img src="{{src}}" class="attachment-hm-attachments-thumbnail">';
+        echo '<input type="hidden" name="hm-attachment[{{temp_id}}][id]" value="" class="id">';
+        echo '<input type="hidden" name="hm-attachment[{{temp_id}}][order]" value="' . esc_attr( $i ) . '" class="order">';
+
+        // fields
+        if( $this->config['fields'] ) {
+            foreach( $this->config['fields'] as $field_id => $field_properties ) {
+                include( 'inc/field-' . $field_properties['type'] . '.php' );
+            }
+        } 
+
+        echo '<a href="#" class="delete-link">' . __( 'Delete', 'hm-attachments' ) . '</a>';
+        echo '</div>';
+        echo '</div>';
 
         echo '<p><a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Click Here to Open the Media Manager', 'hm_attachments' ) ) . '">' . __( 'Click Here to Open the Media Manager', 'hm_attachments' ) . '</a></p>';
+    
     }
 
 
@@ -186,66 +171,30 @@ class hmAttachments {
             return;
         }
 
-        if( $_REQUEST['hm-attachments'] ) {
+        if( $_REQUEST['hm-attachment'] ) {
+
+            // print_r( $_REQUEST['hm-attachment'] );
+
+            // delete all data
+            delete_post_meta( $post_id, 'hm-attachment' );
     
-            foreach( $_REQUEST['hm-attachments'] as $id => $data ) {
+            foreach( $_REQUEST['hm-attachment'] as $temp_id => $data ) {
 
-                if( !$data['delete'] ) {
-                    // save post
+                if( $temp_id && $temp_id != '{{temp_id}}' ) {
+                    $data = array( 
+                        'id'        => $data['id'],
+                        'order'     => $data['order'],
+                        'fields'    => $data['fields']
+                    );
 
-                    // post attributes
-                    $post = array(
-                        'ID' => $id,
-                        'post_parent' => $post_id
-                        );
+                    // print_r( json_encode( $data ) );
+                    // add_post_meta( $post_id, 'hm-attachment', json_encode( $data, JSON_UNESCAPED_UNICODE ) );
+                    add_post_meta( $post_id, 'hm-attachment', json_encode( $data ) );
 
-                    // menu_order
-                    if( intval( $data['menu_order'] ) ) {
-                        $post['menu_order'] = intval( $data['menu_order'] );
-                    }
-
-                    // title
-                    if( $data['title'] ) {
-                        $post['post_title'] = $data['title'];
-                    }
-
-                    // caption
-                    if( $data['caption'] ) {
-                        $post['post_excerpt'] = $data['caption'];
-                    }
-
-                    // caption
-                    if( $data['description'] ) {
-                        $post['post_content'] = $data['description'];
-                    }
-
-                    // print_r( $post );
-
-                    remove_action( 'save_post', array( $this, 'save_meta' ) );
-                    wp_update_post( $post );
-                    remove_action( 'save_post', array( $this, 'save_meta' ) );
-                    
-                    // meta attributes
-                    
-                    // print_r( $data['meta'] );
-                    if( $data['meta'] ) {
-                        foreach( $data['meta'] as $key => $value ) {
-                            update_post_meta( $id, $key, $value );
-                        }
-                    }   
-
-                } else {
-                    // delete post
-                    // TODO: decide whether to delete or detach the file from the post.
-                    wp_delete_attachment( $id, false );
-
-                }     
-
+                }
             }
 
         }
-
-        // print_r( $_REQUEST['hm-attachments'] );
 
     }
 
@@ -272,12 +221,6 @@ class hmAttachments {
 
         return $response;
 
-    }
-
-    public function modify_media_uploader_query( $query ) {
-        $query['post_parent'] = $_POST['post_id'];
-        
-        return $query;
     }
 
 

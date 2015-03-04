@@ -1,4 +1,4 @@
-var hmAttachements = ( function() { 
+var hmAttachments = ( function() { 
 
     var settings = {
         element: {}
@@ -26,6 +26,12 @@ var hmAttachements = ( function() {
                 
                 settings.frame.open();
 
+            } )
+            .on( 'click', '.hm-attachments-post .delete-link', function( e ) {
+                e.preventDefault();
+
+                var post = jQuery( this ).closest( '.hm-attachments-post' );
+                deletePost( post );
             } );
 
         settings.frame
@@ -39,6 +45,7 @@ var hmAttachements = ( function() {
                 
                     console.log( attachment );
                     addPost( attachment );
+                    settings.element.posts.sortable( 'refresh' );
                 } );
 
         } );
@@ -57,7 +64,7 @@ var hmAttachements = ( function() {
             frame: 'select',
             multiple: true,
             content: 'upload',
-            filterable: false,
+            filterable: true,
             sidebar: false,
             title: hm_attachments.title,
             library: {
@@ -72,7 +79,7 @@ var hmAttachements = ( function() {
     var makeSortable = function() {
 
         settings.element.posts.sortable( {
-            items: '> .hm-attachments-post',
+            items: '.hm-attachments-post',
             handle: '.attachment-hm-attachments-thumbnail',
             axis: 'y',
             // cancel: '.inline-edit-row',
@@ -80,19 +87,19 @@ var hmAttachements = ( function() {
             opacity: .5,
             tolerance: 'pointer',
             update: function() {
-                SetMenuOrder();
+                SetOrder();
             }
         } );
     }
 
-    var SetMenuOrder = function() {
-        var i = 1;
+    var SetOrder = function() {
+        var i = 0;
 
         settings.element.posts
             .find( '.hm-attachments-post' )
             .each( function() {
                 jQuery( this )
-                    .find( '.menu_order' )
+                    .find( '.order' )
                     .attr( 'value', i );
  
                 i++;
@@ -100,42 +107,43 @@ var hmAttachements = ( function() {
     }
 
     var addPost = function( data ) {
+        console.log( 'hmAttachments.addPost()' );
+        console.log( data );
+
         var post = settings.element.placeholder.clone();
-        var menu_order = parseInt( post.find( '.menu_order' ).attr( 'value' ) );
+        var order = parseInt( post.find( '.order' ).attr( 'value' ) );
+
+        var temp_id = ( new Date().getTime() ).toString( 16 );
 
         // populate fields  
+
+        // attachmentb ID
+        post
+            .find( '.id' )
+            .attr( 'value', data.id );
+
+        // temp id
+        post
+            .attr( 'data-id', post.attr( 'data-id' ).replace( '{{temp_id}}', temp_id ) );        
+
         // image src
         post.find( 'img' ).attr( 'src', data.sizes['hm-attachments-thumbnail'].url );
 
-        var fields = [
-            'menu_order',
-            'title',
-            'caption',
-            'description',
-            'alt'
-        ];
-
         // inputs
-        for( var i = 0; i < fields.length; i++ ) {
-            var input = post.find( '.' + fields[i] );
-            console.log( input );
-            input
-                .attr( 'name', input.attr( 'name' ).replace( '{{id}}', data.id ) );
+        post.find( 'input, textarea' ).each( function() {
+            var input = jQuery( this );
 
-            if( data[ fields[i] ] ) {
-                input
-                    .attr( 'value', data[ fields[i] ] )
-            }
-        }
+            input
+                .attr( 'name', input.attr( 'name' ).replace( '{{temp_id}}', temp_id ) );
+        } );
 
         // labels
         var labels = post.find( 'label' );
         labels.each( function () {
             var label = jQuery( this );
             label
-                .attr( 'for', label.attr( 'for' ).replace( '{{id}}', data.id ) );
+                .attr( 'for', label.attr( 'for' ).replace( '{{temp_id}}', temp_id ) );
         } );
-
 
         // add to DOM
         post
@@ -144,8 +152,12 @@ var hmAttachements = ( function() {
     
         // increase image index 
         settings.element.placeholder
-            .find( '.menu_order' )
-            .attr( 'value', ( menu_order + 1 ) );
+            .find( '.order' )
+            .attr( 'value', ( order + 1 ) );
+    }
+
+    var deletePost = function( post ) {
+        post.remove();
     }
 
     return {
@@ -156,5 +168,5 @@ var hmAttachements = ( function() {
 
 
 jQuery( document ).ready( function( $ ) {
-    hmAttachements.init();
+    hmAttachments.init();
 } );
