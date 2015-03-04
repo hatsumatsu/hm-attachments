@@ -1,0 +1,65 @@
+#hm-attachments {
+
+}
+
+#hm-attachments > .inside {
+	background: #f7f7f7;
+}
+
+.hm-attachments-posts {
+
+}
+
+.hm-attachments-post {
+	min-height: 120px;
+	margin: 0 -12px;
+	padding: 8px 12px 8px 152px;
+
+	background: #fff;
+	border-bottom: 1px solid #eee;
+}
+
+.hm-attachments-post-new {
+	animation: shine 1s 1 ease;
+}
+
+@keyframes shine {
+	0% {
+		background: #ffc407;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+.hm-attachments-post > img {
+	float: left; 
+	display: block;
+	width: 120px;
+	height: 120px;
+	margin: 0 0 0 -140px;
+
+	border: 1px solid #eee;
+
+	cursor: move;
+}
+
+.hm-attachments-post > label {
+	display: block;
+	box-sizing: border-box;
+
+	width: 20%;
+	min-width: 8em;
+	padding: 0 1em 0 0;
+}
+
+.hm-attachments-post > input,
+.hm-attachments-post > textarea {
+	display: block;
+	width: 70%;
+}
+
+.hm-attachments-post-placeholder {
+	display: none;
+}
