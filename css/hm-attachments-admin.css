@@ -15,19 +15,15 @@
 	padding: 0.5%;
 }
 
-.hm-attachments-posts.show-info {
-
-}
-
 .hm-attachments-post {
-	/* position: relative; */
+	position: relative;
 
 	display: inline-block;
 	width: 12em;
 	height: 12em;
 	margin: 0.5%;
 
-	background: #fff;
+	background: #222;
 	border: 1px solid #e5e5e5;
 
 	vertical-align: top;
@@ -43,85 +39,43 @@
 
 }
 
-.hm-attachments-post.show-info {
-	margin-bottom: 2%;
-	/* padding-bottom: 10em; */
-
-	overflow: visible;
-}
-
-.hm-attachments-post > .preview-image {
+.hm-attachments-post > .hm-attachments-preview-image {
 	display: block;
 	width: 100%;
 	height: auto;
+
 	cursor: move;
+
+  	transition-duration: 250ms;
+  	transition-timing-function: ease;
+  	transition-property: filter, opacity; 
 }
 
-.hm-attachments-post-info {
-	position: absolute;
-	top: auto;
-	left: 0;
-	right: 0;
-
-	height: 0;
-	margin: 1% 1% 0; 
-	padding: 0 1.5em;
-
-	background: #fff;
-	border: 1px solid #e5e5e5;
-	border-top-width: 0;
-	border-bottom-width: 0;
-
-	height: 0;
-
-	overflow: hidden;
-
-	transition: all 250ms ease; 
-}
-
-.hm-attachments-post.show-info .hm-attachments-post-info {
-	/* height: 8em; */
-
-  	border-top-width: 1px;
-  	border-bottom-width: 1px;
+.hm-attachments-post:hover > .hm-attachments-preview-image {
+	/* filter: blur( 4px ); */
+	opacity: 0.6;
 }
 
 .hm-attachments-post-actions {
-	position: relative;
+	position: absolute;
 	left: 0;
 	right: 0;
 	bottom: 0;
 
-	/* width: 100%; */
-	/* height: 1.5em; */
-	margin: 0 0 0 0;
 	padding: 0.5em 0.5em;
 
 	background: #fff;
 
-	transition: all 250ms ease; 
+	transform: translateY( 100% );
+
+	-webkit-transition: all 250ms ease;
+	-moz-transition: all 250ms ease;
+	-ms-transition: all 250ms ease;
+	transition: all 250ms ease;
 }
 
-.hm-attachments-post:hover .hm-attachments-post-actions,
-.hm-attachments-post.show-info .hm-attachments-post-actions {
-	margin-top: -3em;
-}
-
-
-.hm-attachments-post.show-info .hm-attachments-post-actions::after {
-	content: ' ';
-
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: -1px;
-	z-index: 100;
-
-	display: block;
-	height: 1px;
-	margin: 0 0 -6% 0;
-
-	background: #fff;
+.hm-attachments-post:hover .hm-attachments-post-actions {
+	transform: translateY( 0 );
 }
 
 .hm-attachments-post-actions > a {
@@ -206,20 +160,111 @@
 	width: 24em;
 }
 
+/* label */
+.hm-attachments-post-label {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 10;
 
-/* text item */
-.hm-attachments-post[data-type='text'] {
+	padding: 0.75em 1em;
 
+	color: #fff;
+
+	opacity: 0;
+
+	transform: translateY( -100% );
+
+  	transition-duration: 250ms;
+  	transition-timing-function: ease;
+  	transition-property: transform; 
 }
 
-.hm-attachments-post[data-type='text'] .preview-text {
+.hm-attachments-post:hover .hm-attachments-post-label {
+	opacity: 1;
+
+	transform: translateY( 0 );
+}
+
+.hm-attachments-post:hover .hm-attachments-post-label > p {
+	margin: 0;
+}
+
+/* info */
+.hm-attachments-post-info {
+	position: fixed;
+	top: 0;
+	left: 4em;
+	right: 4em;
+	z-index: 10000;
+
+	display: none;
+	max-width: 36em;
+	margin: 4em auto;
+	padding: 1em;
+
+	background: #fff;
+	border: 1px solid #aaa;
+	box-shadow: 0 0 1em rgba( 0,0,0,0.2 );
+}
+
+.hm-attachments-post.show-info .hm-attachments-post-info {
 	display: block;
+}
+
+.hm-attachments-show-info::after {
+	content: ' ';
+
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 1000;
+
+	background: rgba( 0,0,0,0.7 );
+}
+
+.hm-attachments-post-info > label {
+	margin: 0 0 0.25em 0;
+}
+
+.hm-attachments-post-info > input[type='text'] {
+	box-sizing: border-box;
 	width: 100%;
-	height: 100%;
+	margin: 0 0 0.5em 0;
+}
 
-	background: red;
+.hm-attachments-post-info-header {
+	margin: -1em -1em 1em -1em;
+	padding: 1em 1em;
 
-	overflow: hidden;
+	background: #fcfcfc;
+	border-bottom: 1px solid #dddddd;
+}
+
+.hm-attachments-post-info-header > h4 {
+	margin: 0;
+}
+
+.hm-attachments-post-info-header > .meta {
+	margin: 0;
+	color: #666;
+}
+
+.hm-attachments-post-info-footer {
+	margin: 1em -1em -1em -1em;
+	padding: 1em 1em;
+
+	text-align: right;
+
+	background: #fcfcfc;
+	border-top: 1px solid #dddddd;
+}
+
+.hm-attachments-post-info-footer > .button {
+
 }
 
 

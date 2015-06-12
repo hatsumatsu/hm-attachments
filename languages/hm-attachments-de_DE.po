@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: HM Attachments\n"
+"POT-Creation-Date: 2015-06-10 16:51+0100\n"
+"PO-Revision-Date: 2015-06-12 16:28+0100\n"
+"Last-Translator: me <me@fake.it>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_x\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: ..\n"
+
+#: ../bff-attachments.php:38
+msgid "Upload or Choose images"
+msgstr "Bilder auswählen oder uploaden"
+
+#: ../bff-attachments.php:39
+msgid "Add images"
+msgstr "Bilder hinzufügen"
+
+#: ../bff-attachments.php:63
+msgid "Post Media"
+msgstr "Medien"
+
+#: ../bff-attachments.php:135 ../bff-attachments.php:178
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ../bff-attachments.php:136 ../bff-attachments.php:179
+msgid "Delete"
+msgstr "Löschen"
+
+#: ../bff-attachments.php:142 ../bff-attachments.php:185
+msgid "Image details"
+msgstr "Bilddetails"
+
+#: ../bff-attachments.php:144 ../bff-attachments.php:187
+msgid "Title"
+msgstr "Titel"
+
+#: ../bff-attachments.php:147 ../bff-attachments.php:190
+msgid "Save"
+msgstr "Speichern"
+
+#: ../bff-attachments.php:199
+msgid "Add Media"
+msgstr "Bilder hinzufügen"
