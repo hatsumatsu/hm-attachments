@@ -27,12 +27,28 @@ var hmAttachments = ( function() {
                 settings.frame.open();
 
             } )
+            .on( 'click', '.hm-attachments-add-text', function( e ) {
+                e.preventDefault();
+                
+                addText();
+            } )
             .on( 'click', '.hm-attachments-post .delete-link', function( e ) {
                 e.preventDefault();
 
                 var post = jQuery( this ).closest( '.hm-attachments-post' );
                 deletePost( post );
-            } );
+            } )
+            .on( 'click', '.hm-attachments-post .edit-link', function( e ) {
+                e.preventDefault();
+
+                var post = jQuery( this ).closest( '.hm-attachments-post' );
+                if( post.hasClass( 'show-info' ) ) {
+                    hideInfo( post );
+                } else {
+                    hideAllInfo();
+                    showInfo( post );
+                }
+            } );;
 
         settings.frame
             .on( 'select', function(){
@@ -79,9 +95,10 @@ var hmAttachments = ( function() {
     var makeSortable = function() {
 
         settings.element.posts.sortable( {
-            items: '.hm-attachments-post',
-            handle: '.attachment-hm-attachments-thumbnail',
-            axis: 'y',
+            items: '.hm-attachments-post.sortable',
+            containment: '.hm-attachments-posts',
+            handle: '.hm-attachments-preview',
+            // axis: 'y',
             // cancel: '.inline-edit-row',
             distance: 2,
             opacity: .5,
@@ -110,10 +127,12 @@ var hmAttachments = ( function() {
         console.log( 'hmAttachments.addPost()' );
         console.log( data );
 
-        var post = settings.element.placeholder.clone();
+        var post = settings.element.placeholder.filter( '[data-type="image"]' ).first().clone();
         var order = parseInt( post.find( '.order' ).attr( 'value' ) );
 
         var temp_id = ( new Date().getTime() ).toString( 16 );
+
+        console.log( post );
 
         // populate fields  
 
@@ -148,7 +167,57 @@ var hmAttachments = ( function() {
         // add to DOM
         post
             .removeClass( 'hm-attachments-post-placeholder' )
-            .insertBefore( settings.element.placeholder );
+            .insertBefore( settings.element.placeholder.first() );
+    
+        // increase image index 
+        settings.element.placeholder
+            .find( '.order' )
+            .attr( 'value', ( order + 1 ) );
+    }
+
+    var addText = function( data ) {
+        console.log( 'hmAttachments.addText()' );
+        console.log( data );
+
+        var post = settings.element.placeholder.filter( '[data-type="text"]' ).first().clone();
+        var order = parseInt( post.find( '.order' ).attr( 'value' ) );
+
+        var temp_id = ( new Date().getTime() ).toString( 16 );
+
+        // populate fields  
+
+        // attachmentb ID
+        // post
+        //     .find( '.id' )
+        //     .attr( 'value', data.id );
+
+        // temp id
+        post
+            .attr( 'data-id', post.attr( 'data-id' ).replace( '{{temp_id}}', temp_id ) );        
+
+        // image src
+        // post.find( 'img' ).attr( 'src', data.sizes['hm-attachments-thumbnail'].url );
+
+        // inputs
+        post.find( 'input, textarea' ).each( function() {
+            var input = jQuery( this );
+
+            input
+                .attr( 'name', input.attr( 'name' ).replace( '{{temp_id}}', temp_id ) );
+        } );
+
+        // labels
+        var labels = post.find( 'label' );
+        labels.each( function () {
+            var label = jQuery( this );
+            label
+                .attr( 'for', label.attr( 'for' ).replace( '{{temp_id}}', temp_id ) );
+        } );
+
+        // add to DOM
+        post
+            .removeClass( 'hm-attachments-post-placeholder' )
+            .insertBefore( settings.element.placeholder.first() );
     
         // increase image index 
         settings.element.placeholder
@@ -159,6 +228,49 @@ var hmAttachments = ( function() {
     var deletePost = function( post ) {
         post.remove();
     }
+
+    var showInfo = function( post ) {
+        var posts = post.closest( '.hm-attachments-posts' );
+        post.addClass( 'show-info' );
+        posts.addClass( 'show-info' );  
+
+        var height = post.find( '.fields' ).outerHeight();
+        console.log( height );
+        post
+            .css( {
+                'paddingBottom': height + 'px'
+            } )
+            .find( '.hm-attachments-post-info' )
+            .css( {
+                'height': height + 'px'
+            } );      
+    }
+
+    var hideInfo = function( post ) {
+
+        var posts = post.closest( '.hm-attachments-posts' );
+        post.removeClass( 'show-info' );
+        posts.removeClass( 'show-info' );  
+
+        post
+            .css( {
+                'paddingBottom': '0px'
+            } )
+            .find( '.hm-attachments-post-info' )
+            .css( {
+                'height': '0px'
+            } );      
+    }
+
+    var hideAllInfo = function() {
+        var posts = jQuery( '.hm-attachments-post.show-info' );
+
+        posts.each( function() {
+            hideInfo( jQuery( this ) );
+        } );
+
+    }
+
 
     return {
         init: function() { init(); }

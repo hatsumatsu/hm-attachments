@@ -3,63 +3,243 @@
 }
 
 #hm-attachments > .inside {
+	margin-top: 0;
+	padding-top: 12px;
+
 	background: #f7f7f7;
 }
 
 .hm-attachments-posts {
+	position: relative;
+
+	padding: 0.5%;
+}
+
+.hm-attachments-posts.show-info {
 
 }
 
 .hm-attachments-post {
-	min-height: 120px;
-	margin: 0 -12px;
-	padding: 8px 12px 8px 152px;
+	/* position: relative; */
+
+	display: inline-block;
+	width: 12em;
+	height: 12em;
+	margin: 0.5%;
 
 	background: #fff;
-	border-bottom: 1px solid #eee;
+	border: 1px solid #e5e5e5;
+
+	vertical-align: top;
+
+	overflow: hidden;
+
+  	transition-duration: 250ms;
+  	transition-timing-function: ease;
+  	transition-property: margin, padding; 
 }
 
-.hm-attachments-post-new {
-	animation: shine 1s 1 ease;
+.hm-attachments-posts.show-info .hm-attachments-post {
+
 }
 
-@keyframes shine {
-	0% {
-		background: #ffc407;
-	}
+.hm-attachments-post.show-info {
+	margin-bottom: 2%;
+	/* padding-bottom: 10em; */
 
-	100% {
-		background: #fff;
-	}
+	overflow: visible;
 }
 
-.hm-attachments-post > img {
-	float: left; 
+.hm-attachments-post > .preview-image {
 	display: block;
-	width: 120px;
-	height: 120px;
-	margin: 0 0 0 -140px;
-
-	border: 1px solid #eee;
-
+	width: 100%;
+	height: auto;
 	cursor: move;
 }
 
-.hm-attachments-post > label {
-	display: block;
-	box-sizing: border-box;
+.hm-attachments-post-info {
+	position: absolute;
+	top: auto;
+	left: 0;
+	right: 0;
 
-	width: 20%;
-	min-width: 8em;
+	height: 0;
+	margin: 1% 1% 0; 
+	padding: 0 1.5em;
+
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-top-width: 0;
+	border-bottom-width: 0;
+
+	height: 0;
+
+	overflow: hidden;
+
+	transition: all 250ms ease; 
+}
+
+.hm-attachments-post.show-info .hm-attachments-post-info {
+	/* height: 8em; */
+
+  	border-top-width: 1px;
+  	border-bottom-width: 1px;
+}
+
+.hm-attachments-post-actions {
+	position: relative;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	/* width: 100%; */
+	/* height: 1.5em; */
+	margin: 0 0 0 0;
+	padding: 0.5em 0.5em;
+
+	background: #fff;
+
+	transition: all 250ms ease; 
+}
+
+.hm-attachments-post:hover .hm-attachments-post-actions,
+.hm-attachments-post.show-info .hm-attachments-post-actions {
+	margin-top: -3em;
+}
+
+
+.hm-attachments-post.show-info .hm-attachments-post-actions::after {
+	content: ' ';
+
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	z-index: 100;
+
+	display: block;
+	height: 1px;
+	margin: 0 0 -6% 0;
+
+	background: #fff;
+}
+
+.hm-attachments-post-actions > a {
+	position: relative;
+
+	display: inline-block;
+	width: 2em;
+	height: 2em;
+	margin: 0 0.25em;
+
+	white-space: nowrap;
+	text-indent: 300%;
+	overflow: hidden;
+
+	vertical-align: bottom;
+}
+
+.hm-attachments-post-actions > .delete-link {
+	color: #a00;
+}
+
+.hm-attachments-post-actions > .delete-link:hover,
+.hm-attachments-post-actions > .delete-link:active,
+.hm-attachments-post-actions > .delete-link:focus {
+	color: #f00;
+}
+
+.hm-attachments-post-actions > a::before {
+	content: '';
+
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	display: block;
+	width: 1em;
+	height: 1em;
+	padding: 0;
+
+	font-family: 'dashicons';
+	font-size: 2em;
+	line-height: 1;
+	text-decoration: none;
+	text-indent: 0;
+
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.hm-attachments-post-actions > .edit-link::before {
+	content: '\f464';
+}
+
+.hm-attachments-post.show-info .hm-attachments-post-actions > .edit-link::before {
+	content: '\f335';
+}
+
+.hm-attachments-post-actions > .delete-link::before {
+	content: '\f182';
+
+	font-size: 1.75em;
+}
+
+.hm-attachments-post-info .fields {
+	padding: 1.5em 0;
+}
+
+.hm-attachments-post-info .field {
+	margin: 0.5em 0;
+}
+
+.hm-attachments-post label {
+	display: inline-block;
+
+	width: 8em;
 	padding: 0 1em 0 0;
 }
 
-.hm-attachments-post > input,
-.hm-attachments-post > textarea {
-	display: block;
-	width: 70%;
+.hm-attachments-post input,
+.hm-attachments-post textarea {
+	display: inline-block;
+	width: 24em;
 }
 
+
+/* text item */
+.hm-attachments-post[data-type='text'] {
+
+}
+
+.hm-attachments-post[data-type='text'] .preview-text {
+	display: block;
+	width: 100%;
+	height: 100%;
+
+	background: red;
+
+	overflow: hidden;
+}
+
+
+/* placeholder */
 .hm-attachments-post-placeholder {
 	display: none;
+}
+
+
+/* add new item */
+.hm-attachments-post-add {
+	text-align: center;
+
+	background: none;
+	/* box-shadow: 0 0 1em rgba( 0,0,0,0.2 ); */
+}
+
+.hm-attachments-post-add > .button {
+	position: relative;
+	top: 50%;
+
+	margin: -0.75em auto 0;
 }
