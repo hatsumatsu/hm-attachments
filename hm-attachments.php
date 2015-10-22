@@ -115,7 +115,10 @@ function render_metabox( $post ) {
 
         foreach( $attachments as $attachment ) {
             $original = wp_get_attachment_image_src( $attachment['id'], 'full' );
-
+            $filename = basename( $original[0] );
+            if( mb_strlen( $filename ) > 19 ) {
+                $filename = mb_substr( $filename, 0, 8 ) . '...' . mb_substr( $filename, ( mb_strlen( $filename ) - 8 ), mb_strlen( $filename ) );
+            }
 
             echo '<div class="hm-attachments-post sortable" data-id="' . esc_attr( $attachment['temp_id'] ) . '" data-type="' . esc_attr( $attachment['type'] ) . '">';
             echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][id]" value="' . esc_attr( $attachment['id'] ) . '" class="id">';
@@ -127,6 +130,7 @@ function render_metabox( $post ) {
 
             // label
             echo '<div class="hm-attachments-post-label">';
+            echo '<p class="meta meta--filename">' . $filename . '</p>';              
             echo '<p class="meta meta--dimensions">' . $original[1] . '&thinsp;&times;&thinsp;' . $original[2] . 'px</p>';  
             echo '</div>';
 
@@ -170,6 +174,7 @@ function render_metabox( $post ) {
 
     // label
     echo '<div class="hm-attachments-post-label">';
+    echo '<p class="meta meta--filename">{{filename}}</p>';      
     echo '<p class="meta meta--dimensions">{{width}}&thinsp;&times;&thinsp;{{height}}px</p>';  
     echo '</div>';
 
@@ -247,8 +252,8 @@ add_action( 'save_post', __NAMESPACE__ . '\save_meta' );
 
 
 /**
- * Add custom data to the JSON objct handed over 
- * by the WP media modal
+ * Add custom data to the JSON object 
+ * handed over by the WP media modal
  * @param  array $response     modal response
  * @param  WP_Post $attachment attachment object
  * @param  array $meta         attachment meta

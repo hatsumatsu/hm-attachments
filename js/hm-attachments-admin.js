@@ -156,6 +156,17 @@ var HMattachments = ( function() {
             post.find( 'img' ).attr( 'src', data.sizes['hm-attachments-thumbnail'].url );
         }
 
+        // image filename
+        if( data.sizes['full'].url ) {
+            var meta = post.find( '.meta--filename' );
+            var filename = data.sizes['full'].url.split( '/' ); 
+            var filename = filename[ ( filename.length - 1 ) ];
+            if( filename.length > 19 ) {
+                filename = filename.substring( 0, 8 ) + '...' + filename.substring( ( filename.length - 9 ), ( filename.length - 1 ) );
+            }
+            meta.text( meta.text().replace( '{{filename}}', filename ) );
+        }        
+
         // image dimensions
         if( data.width && data.height ) {
             var meta = post.find( '.meta--dimensions' );
