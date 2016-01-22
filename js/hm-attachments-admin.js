@@ -86,12 +86,19 @@ var HMattachments = ( function() {
             frame: 'select',
             multiple: true,
             content: 'upload',
-            filterable: true,
             sidebar: false,
             title: hm_attachments.title,
             library: {
                 type: 'image'
             },
+            states: [
+                new wp.media.controller.Library( {
+                    library:   wp.media.query( { type: 'image' } ),
+                    multiple:  true,
+                    priority:  20,
+                    filterable: 'all'
+                } )
+            ],                
             button: {
                 text:  hm_attachments.button
             }
