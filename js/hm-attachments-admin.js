@@ -5,7 +5,6 @@ var HMattachments = ( function() {
     };
 
     var init = function() {
-
         settings.element.posts = jQuery( '.hm-attachments-posts' );
         settings.element.placeholder = settings.element.posts.find( '.hm-attachments-post-placeholder' );
 
@@ -15,7 +14,6 @@ var HMattachments = ( function() {
     }
 
     var bindEventHandlers = function() {
-        
         jQuery( document )
             .on( 'click', '.hm-attachments-open-media', function( e ) {
                 e.preventDefault();
@@ -69,7 +67,6 @@ var HMattachments = ( function() {
                     addPost( attachment );
                     settings.element.posts.sortable( 'refresh' );
                 } );
-
         } );
     }
 
