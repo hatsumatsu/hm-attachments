@@ -5,24 +5,34 @@ Plugin Name: HM Attachments
 Version: 0.1
 Description: Simple Media attachment management.
 Plugin URI:
-Author: Martin Wecke, HATSUMATSU
-Author URI: http://hatsumatsu.de/
+Author: Martin Wecke
+Author URI: http://martinwecke.de/
 */
 
 class HMAttachments {
+    protected $settings;
 
     public function __construct() {
         // i11n        
         add_action( 'init', array( $this, 'loadI88n' ) );
 
+        // load settings
+        add_action( 'after_setup_theme', array( $this, 'loadSettings' ) );
+
         // add admin JS
-        add_action( 'admin_enqueue_scripts', array( $this, 'adminJS' ) );  
+        add_action( 'admin_enqueue_scripts', array( $this, 'adminJS' ) ); 
 
         // add admin CSS
-        add_action( 'admin_enqueue_scripts', array( $this, 'adminCSS' ) );      
+        add_action( 'admin_enqueue_scripts', array( $this, 'adminCSS' ) );       
 
         // add image sizes
         add_action( 'after_setup_theme', array( $this, 'addImageSizes' ) );
+
+        // register Mustache        
+        add_action( 'init', array( $this, 'registerMustache' ) );
+
+        // add Mustache templates     
+        add_action( 'admin_footer', array( $this, 'addMustacheTemplates' ) );
 
         // add meta box
         add_action( 'add_meta_boxes', array( $this, 'addMetabox' ) );    
@@ -31,7 +41,7 @@ class HMAttachments {
         add_action( 'save_post', array( $this, 'saveAttachments' ) ); 
 
         // include custom image size in JSON sent from media modal
-        add_filter( 'wp_prepare_attachment_for_js',  array( $this, 'include_image_sizes_in_JSON' ), 10, 3 );
+        add_filter( 'wp_prepare_attachment_for_js',  array( $this, 'includeImageSizesInJSON' ), 10, 3 );
     }
 
 
@@ -40,6 +50,23 @@ class HMAttachments {
      */
     public function loadI88n() {
         load_plugin_textdomain( 'hm-attachments', '/wp-content/plugins/hm-attachments/languages/' );        
+    }
+
+
+    /**
+     * Load settings from filter 'hm-attachments/settings'
+     */
+    public function loadSettings() {
+        // default settings
+        $this->settings = array(
+            'post_type' => array(
+                'post',
+                'projects'
+            )
+        );
+
+        // apply custom settings
+        $this->settings = apply_filters( 'hm-attachments/settings', $this->settings );
     }
 
 
@@ -58,14 +85,35 @@ class HMAttachments {
         // Load required media files for the media manager
         wp_enqueue_media();
 
-        // Register, localize and enqueue admin JS
-        wp_register_script( 'hm-attachments-admin', plugins_url( '/js/hm-attachments-admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable'  ), 0, true );
-        wp_localize_script( 'hm-attachments-admin', 'hm_attachments',
+        // Register
+        wp_register_script( 'hm-attachments-mustache', plugins_url( '/js/mustache.min.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable'  ), 0, true );
+        wp_register_script( 'hm-attachments-admin', plugins_url( '/js/hm-attachments-admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable', 'hm-attachments-mustache'  ), 0, true );
+        
+        // Localize
+        wp_localize_script( 'hm-attachments-admin', 'hmAttachmentsLocalization',
             array(
-                'title'     => __( 'Upload or Choose images', 'hm-attachments' ), 
-                'button'    => __( 'Add images', 'hm-attachments' )         
+                'mediaModal' => array(
+                    'title'     => __( 'Upload or Choose images', 'hm-attachments' ), 
+                    'button'    => __( 'Add images', 'hm-attachments' )
+                ),
+                'infoModal'  => array(
+                    'title'     => __( 'Image details', 'hm-theme' ),
+                    'fields'    => array(
+                        'title'     => __( 'Title', 'hm-theme' )
+                    ),
+                    'button'    => array(
+                        'save'      => __( 'Save' )
+                    )
+                ),
+                'actions'   => array(
+                    'edit'      => __( 'Edit', 'hm-attachments' ),
+                    'delete'    => __( 'Delete', 'hm-attachments' )
+                ),                
             )
         );
+
+        // Enqueue
+        wp_enqueue_script( 'hm-attachments-mustache' );
         wp_enqueue_script( 'hm-attachments-admin' );
     }
 
@@ -80,10 +128,32 @@ class HMAttachments {
 
 
     /**
+     * Register Mustache
+     */
+    public function registerMustache() {
+        require plugin_dir_path( __FILE__ ) . 'lib/Mustache/Autoloader.php';
+        Mustache_Autoloader::register();        
+    }
+
+
+    /**
+     * Add the required Mustache templates to the footer
+     * so they can be used by JS
+     */
+    public function addMustacheTemplates() {
+?>
+<script id="mustache-template--attachment" type="x-tmpl-mustache">
+    <?php echo file_get_contents( plugin_dir_path( __FILE__ ) . 'templates/attachment.mustache' ); ?>
+</script>
+<?php
+    }
+
+
+    /**
      * Add meta boxes
      */
     public function addMetabox() {
-        add_meta_box( 'hm-attachments', __( 'Post Media', 'hm-attachments' ), array( $this, 'renderMetabox' ), 'post', 'normal', 'high' );
+        add_meta_box( 'hm-attachments', __( 'Post Media', 'hm-attachments' ), array( $this, 'renderMetabox' ), $this->settings['post_type'], 'normal', 'high' );
     }
 
 
@@ -93,7 +163,6 @@ class HMAttachments {
      */
     public function renderMetabox( $post ) {
         $attachments = $this->getAttachments( $post->ID );
-        // print_r( $attachments );
 
         wp_nonce_field( basename( __FILE__ ), 'hm_attachments_nonce' );
         echo '<div class="hm-attachments-posts">';
@@ -103,94 +172,55 @@ class HMAttachments {
 
             foreach( $attachments as $attachment ) {
                 $original = wp_get_attachment_image_src( $attachment['id'], 'full' );
+                $thumbnail = wp_get_attachment_image_src( $attachment['id'], 'hm-attachments-thumbnail' );
+
+                // shorten filename if neccessary
                 $filename = basename( $original[0] );
                 if( mb_strlen( $filename ) > 19 ) {
                     $filename = mb_substr( $filename, 0, 8 ) . '...' . mb_substr( $filename, ( mb_strlen( $filename ) - 8 ), mb_strlen( $filename ) );
                 }
 
-                echo '<div class="hm-attachments-post sortable" data-id="' . esc_attr( $attachment['temp_id'] ) . '" data-type="' . esc_attr( $attachment['type'] ) . '">';
-                echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][id]" value="' . esc_attr( $attachment['id'] ) . '" class="id">';
-                echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][order]" value="' . esc_attr( $i ) . '" class="order">';                
-                echo '<input type="hidden" name="hm-attachment[' . $attachment['temp_id'] . '][type]" value="' . esc_attr( $attachment['type'] ) . '" class="type">';                
+                $attachment['order'] = $i;
+                $attachment['filename'] = $filename;
+                $attachment['width'] = $original[1];
+                $attachment['height'] = $original[2];
+                $attachment['src'] = $thumbnail[0];
 
+                $data = array(
+                    'attachment'    => $attachment,
+                    'labels'        => array(
+                        'actions'   => array(
+                            'edit'      => __( 'Edit', 'hm-attachments' ),
+                            'delete'    => __( 'Delete', 'hm-attachments' )
+                        ),
+                        'modal'     => array(
+                            'title' => __( 'Image details', 'hm-theme' ),
+                            'fields' => array(
+                                'title' => __( 'Title', 'hm-theme' )
+                            ),
+                            'button' => array(
+                                'save' => __( 'Save' )
+                            )
+                        )
+                    )
+                );
 
-                echo wp_get_attachment_image( $attachment['id'], 'hm-attachments-thumbnail', true, array( 'class' => 'hm-attachments-preview hm-attachments-preview-image' ) );
+                // render attachment template
+                $renderer = new Mustache_Engine;
+                $template = file_get_contents( plugin_dir_path( __FILE__ ) . 'templates/attachment.mustache' );
 
-                // label
-                echo '<div class="hm-attachments-post-label">';
-                echo '<p class="meta meta--filename">' . $filename . '</p>';              
-                echo '<p class="meta meta--dimensions">' . $original[1] . '&thinsp;&times;&thinsp;' . $original[2] . 'px</p>';  
-                echo '</div>';
-
-                // actions 
-                echo '<div class="hm-attachments-post-actions">';
-                echo '<a href="#" class="edit-link">' . __( 'Edit', 'hm-attachments' ) . '</a>';
-                echo '<a href="#" class="delete-link">' . __( 'Delete', 'hm-attachments' ) . '</a>';
-                echo '</div>';
-
-                // info 
-                echo '<div class="hm-attachments-post-info">';
-                echo '<div class="hm-attachments-post-info-header">';    
-                echo '<h4>' . __( 'Image details', 'hm-theme' ) . '</h4>';
-                echo '</div>';
-                echo '<label>' . __( 'Title', 'hm-theme' ) . '</label>';
-                echo '<input type="text" name="hm-attachment[' . $attachment['temp_id'] . '][fields][title]" value="' . esc_attr( $attachment['fields']['title'] ) . '">'; 
-                echo '<div class="hm-attachments-post-info-footer">';    
-                echo '<a href="#" class="button button-primary hm-attachments-post-info-save">' . __( 'Save' ) . '</a>';    
-                echo '</div>';            
-                echo '</div>';
-
-
-                echo '</div>';
+                echo $renderer->render( $template, $data );               
 
                 $i++;
-                // $order_max = ( $attachment['order'] > $order_max ) ? $attachment['order'] : $order_max;
             }
 
         }
 
         $attachment = null;
 
-        // PLACEHOLDERS
-        // image
-        echo '<div class="hm-attachments-post sortable hm-attachments-post-placeholder" data-id="{{temp_id}}" data-type="image">';
-        echo '<img src="{{src}}" class="hm-attachments-thumbnail hm-attachments-preview hm-attachments-preview-image">';
-        echo '<input type="hidden" name="hm-attachment[{{temp_id}}][id]" value="" class="id">';
-        echo '<input type="hidden" name="hm-attachment[{{temp_id}}][order]" value="' . esc_attr( $i ) . '" class="order">';
-        echo '<input type="hidden" name="hm-attachment[{{temp_id}}][type]" value="image" class="type">';
-
-
-        // label
-        echo '<div class="hm-attachments-post-label">';
-        echo '<p class="meta meta--filename">{{filename}}</p>';      
-        echo '<p class="meta meta--dimensions">{{width}}&thinsp;&times;&thinsp;{{height}}px</p>';  
-        echo '</div>';
-
-        // actions
-        echo '<div class="hm-attachments-post-actions">';
-        echo '<a href="#" class="edit-link">' . __( 'Edit', 'hm-attachments' ) . '</a>';
-        echo '<a href="#" class="delete-link">' . __( 'Delete', 'hm-attachments' ) . '</a>';
-        echo '</div>';
-
-        // info
-        echo '<div class="hm-attachments-post-info">';
-        echo '<div class="hm-attachments-post-info-header">';    
-        echo '<h4>' . __( 'Image details', 'hm-theme' ) . '</h4>';  
-        echo '</div>';
-        echo '<label>' . __( 'Title', 'hm-theme' ) . '</label>';
-        echo '<input type="text" name="hm-attachment[{{temp_id}}][fields][title]" value="">'; 
-        echo '<div class="hm-attachments-post-info-footer">';    
-        echo '<a href="#" class="button button-primary hm-attachments-post-info-save">' . __( 'Save' ) . '</a>';    
-        echo '</div>';    
-        echo '</div>'; 
-
-        echo '</div>';
-
-
         // ADD NEW ITEM
-        echo '<div class="hm-attachments-post hm-attachments-post-add">';
+        echo '<div class="hm-attachments-add">';
         echo '<a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Add Media', 'hm_attachments' ) ) . '">' . __( 'Add Media', 'hm_attachments' ) . '</a>';
-        // echo '<a href="#" class="hm-attachments-add-text button" title="' . esc_attr( __( 'Add Text', 'hm_attachments' ) ) . '">' . __( 'Add Text', 'hm_attachments' ) . '</a>';
         echo '</div>';
 
         echo '</div>';    
@@ -217,7 +247,7 @@ class HMAttachments {
 
             foreach( $_REQUEST['hm-attachment'] as $temp_id => $data ) {
 
-                if( $temp_id && $temp_id != '{{temp_id}}' ) {
+                if( $temp_id && $temp_id !== '{{temp_id}}' ) {
 
                     $id = ( $data['id'] ) ? $data['id'] : $temp_id;
 
