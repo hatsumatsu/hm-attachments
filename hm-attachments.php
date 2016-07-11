@@ -95,7 +95,7 @@ class HMAttachments {
         wp_localize_script( 'hm-attachments-admin', 'hmAttachmentsLocalization',
             array(
                 'mediaModal' => array(
-                    'title'     => __( 'Upload or Choose images', 'hm-attachments' ), 
+                    'title'     => __( 'Upload or choose images', 'hm-attachments' ), 
                     'button'    => __( 'Add images', 'hm-attachments' )
                 ),
                 'infoModal'  => array(
@@ -155,7 +155,7 @@ class HMAttachments {
      * Add meta boxes
      */
     public function addMetabox() {
-        add_meta_box( 'hm-attachments', __( 'Post Media', 'hm-attachments' ), array( $this, 'renderMetabox' ), $this->settings['post_type'], 'normal', 'high' );
+        add_meta_box( 'hm-attachments', __( 'Post images', 'hm-attachments' ), array( $this, 'renderMetabox' ), $this->settings['post_type'], 'normal', 'high' );
     }
 
 
@@ -220,7 +220,7 @@ class HMAttachments {
 
         // ADD NEW ITEM
         echo '<div class="hm-attachments-add">';
-        echo '<a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Add Media', 'hm_attachments' ) ) . '">' . __( 'Add Media', 'hm_attachments' ) . '</a>';
+        echo '<a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Add images', 'hm_attachments' ) ) . '">' . __( 'Add images', 'hm_attachments' ) . '</a>';
         echo '</div>';
 
         echo '</div>';    
