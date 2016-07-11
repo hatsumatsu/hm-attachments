@@ -2,11 +2,13 @@
 
 /*
 Plugin Name: HM Attachments
-Version: 0.1
-Description: Simple Media attachment management.
+Version: 0.2
+Description: Simple post image management.
 Plugin URI:
 Author: Martin Wecke
 Author URI: http://martinwecke.de/
+GitHub Plugin URI: https://github.com/hatsumatsu/hm-attachments
+GitHub Branch: master
 */
 
 class HMAttachments {
@@ -169,7 +171,6 @@ class HMAttachments {
 
         $i = 0;
         if( $attachments ) {
-
             foreach( $attachments as $attachment ) {
                 $original = wp_get_attachment_image_src( $attachment['id'], 'full' );
                 $thumbnail = wp_get_attachment_image_src( $attachment['id'], 'hm-attachments-thumbnail' );
@@ -213,7 +214,6 @@ class HMAttachments {
 
                 $i++;
             }
-
         }
 
         $attachment = null;
@@ -279,7 +279,6 @@ class HMAttachments {
         $sizes = array( 'hm-attachments-thumbnail' ) ;
 
         foreach( $sizes as $size ) {
-
             if( isset( $meta['sizes'][ $size ] ) ) {
                 $attachment_url = wp_get_attachment_url( $attachment->ID );
                 $base_url = str_replace( wp_basename( $attachment_url ), '', $attachment_url );
@@ -292,7 +291,6 @@ class HMAttachments {
                     'orientation'   => $size_meta['height'] > $size_meta['width'] ? 'portrait' : 'landscape',
                 );
             }
-
         }
 
         return $response;
