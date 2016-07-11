@@ -3,6 +3,7 @@ var hmAttachments = ( function() {
 		selector: {
 			posts:      '.hm-attachments-posts',
 			post:       '.hm-attachments-post',
+			add: 		'.hm-attachments-add',
 			linkDelete: '.hm-attachments-post .delete-link',
 			linkEdit:   '.hm-attachments-post .edit-link',
 			linkSave:   '.hm-attachments-post-info-save',
@@ -69,8 +70,6 @@ var hmAttachments = ( function() {
 		settings.frame
 			.on( 'select', function(){
 				var attachments = settings.frame.state().get( 'selection' );
-
-				console.log( attachments );
 
 				attachments.map( function( attachment ) {
 					var attachment = attachment.toJSON();
@@ -153,8 +152,6 @@ var hmAttachments = ( function() {
 	 * @param {array} data attachment data sent from mdeia modal
 	 */
 	var addPost = function( data ) {
-		console.log( data );
-
 		var order = jQuery( settings.selector.post ).length;
 
 		var temp_id = ( new Date().getTime() ).toString( 16 );
@@ -200,11 +197,9 @@ var hmAttachments = ( function() {
 		Mustache.parse( template );
 		var rendered = Mustache.render( template, _data );
 
-		console.log( rendered );
-
 		// add to DOM
 		jQuery( rendered )
-			.insertAfter( jQuery( settings.selector.post ).last() );
+			.insertBefore( jQuery( settings.selector.add ).first() );
 	}
 
 
