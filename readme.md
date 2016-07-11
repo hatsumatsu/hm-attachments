@@ -26,9 +26,9 @@ add_filter( 'hm-attachments/settings', 'hm_attachments_settings' );
 ### Get attachments 
 
 `````
-getAttachments( $post_id, $orderby )
+getAttachments( $post_id, $orderby );
 `````
 
 `$post_id` the post ID to fetch attachments from
 
-`orderby` the field to order the attachments. can be `order` or `id`.
+`$orderby` the field to order the attachments. can be `order` or `id`.
