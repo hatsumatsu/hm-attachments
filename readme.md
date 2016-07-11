@@ -5,7 +5,7 @@ Simple post image management.
 
 ### Settings
 
-Use the `hm-attachments/settings` filter inside your `functions.php`. Right now there is only one settings for the supported post types. Put the fo
+Use the `hm-attachments/settings` filter inside your `functions.php`. Right now there is only the option top set the supported post types.
 
 `````
 function hm_attachments_settings( $settings ) {
@@ -20,14 +20,15 @@ function hm_attachments_settings( $settings ) {
     return $settings;
 }
 
-add_filter( 'hm-attachments/settings', 'hma_settings' );
+add_filter( 'hm-attachments/settings', 'hm_attachments_settings' );
 `````
 
 ### Get attachments 
 
-`$post_id` the post ID to fetch attachments from
-`orderby` the field to order the attachments. can be `order` or `id`.
-
 `````
 getAttachments( $post_id, $orderby )
 `````
+
+`$post_id` the post ID to fetch attachments from
+
+`orderby` the field to order the attachments. can be `order` or `id`.
