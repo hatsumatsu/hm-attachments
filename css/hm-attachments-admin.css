@@ -15,7 +15,8 @@
 	padding: 0.5%;
 }
 
-.hm-attachments-post {
+.hm-attachments-post,
+.hm-attachments-add {
 	position: relative;
 
 	display: inline-block;
@@ -179,6 +180,8 @@
   	transition-duration: 250ms;
   	transition-timing-function: ease;
   	transition-property: transform; 
+
+  	pointer-events: none;
 }
 
 .hm-attachments-post:hover .hm-attachments-post-label {
@@ -275,14 +278,14 @@
 
 
 /* add new item */
-.hm-attachments-post-add {
+.hm-attachments-add {
 	text-align: center;
 
 	background: none;
 	/* box-shadow: 0 0 1em rgba( 0,0,0,0.2 ); */
 }
 
-.hm-attachments-post-add > .button {
+.hm-attachments-add > .button {
 	position: relative;
 	top: 50%;
 

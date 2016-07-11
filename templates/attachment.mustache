@@ -1,0 +1,30 @@
+<div class="hm-attachments-post sortable" data-id="{{attachment.temp_id}}" data-type="{{attachment.type}}">
+	<input type="hidden" name="hm-attachment[{{attachment.temp_id}}][id]" value="{{attachment.id}}" class="id">
+	<input type="hidden" name="hm-attachment[{{attachment.temp_id}}][order]" value="{{attachment.order}}" class="order">         
+	<input type="hidden" name="hm-attachment[{{attachment.temp_id}}][type]" value="{{attachment.type}}" class="type">
+
+	<img src="{{attachment.src}}" class="hm-attachments-preview hm-attachments-preview-image ui-sortable-handle">
+	
+	<div class="hm-attachments-post-label">
+		<p class="meta meta--filename">{{attachment.filename}}</p>
+		<p class="meta meta--dimensions">{{attachment.width}}&thinsp;&times;&thinsp;{{attachment.height}}px</p>
+	</div>
+
+	<div class="hm-attachments-post-actions">
+		<a href="#" class="edit-link" title="{{labels.actions.edit}}">{{labels.actions.edit}}</a>
+		<a href="#" class="delete-link" title="{{labels.actions.delete}}">{{labels.actions.delete}}</a>
+	</div>
+
+	<div class="hm-attachments-post-info">
+		<div class="hm-attachments-post-info-header">
+			<h4>{{labels.modal.title}}</h4>
+		</div>
+
+		<label>{{labels.modal.fields.title}}</label>
+		<input type="text" name="hm-attachment[{{attachment.temp_id}}][fields][title]" value="{{attachment.fields.title}}">
+		
+		<div class="hm-attachments-post-info-footer">
+			<a href="#" class="button button-primary hm-attachments-post-info-save">{{labels.modal.button.save}}</a>
+		</div>
+	</div>
+</div>

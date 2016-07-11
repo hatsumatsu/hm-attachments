@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: HM Attachments\n"
-"POT-Creation-Date: 2015-06-10 16:51+0100\n"
-"PO-Revision-Date: 2015-06-12 16:28+0100\n"
-"Last-Translator: me <me@fake.it>\n"
+"POT-Creation-Date: 2016-07-11 18:22+0100\n"
+"PO-Revision-Date: 2016-07-11 18:23+0100\n"
+"Last-Translator: hatsumatsu <mail@hatsumatsu.de>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -16,38 +16,40 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../bff-attachments.php:38
-msgid "Upload or Choose images"
-msgstr "Bilder auswählen oder uploaden"
+#: ../hm-attachments.php:98
+msgid "Upload or choose images"
+msgstr "﻿Bilder hochladen oder auswählen"
 
-#: ../bff-attachments.php:39
+#: ../hm-attachments.php:99 ../hm-attachments.php:223
 msgid "Add images"
 msgstr "Bilder hinzufügen"
 
-#: ../bff-attachments.php:63
-msgid "Post Media"
-msgstr "Medien"
-
-#: ../bff-attachments.php:135 ../bff-attachments.php:178
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: ../bff-attachments.php:136 ../bff-attachments.php:179
-msgid "Delete"
-msgstr "Löschen"
-
-#: ../bff-attachments.php:142 ../bff-attachments.php:185
+#: ../hm-attachments.php:102 ../hm-attachments.php:198
 msgid "Image details"
 msgstr "Bilddetails"
 
-#: ../bff-attachments.php:144 ../bff-attachments.php:187
+#: ../hm-attachments.php:104 ../hm-attachments.php:200
 msgid "Title"
 msgstr "Titel"
 
-#: ../bff-attachments.php:147 ../bff-attachments.php:190
+#: ../hm-attachments.php:107 ../hm-attachments.php:203
 msgid "Save"
 msgstr "Speichern"
 
-#: ../bff-attachments.php:199
-msgid "Add Media"
-msgstr "Bilder hinzufügen"
+#: ../hm-attachments.php:111 ../hm-attachments.php:194
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ../hm-attachments.php:112 ../hm-attachments.php:195
+msgid "Delete"
+msgstr "Löschen"
+
+#: ../hm-attachments.php:158
+msgid "Post images"
+msgstr "Beitragsbilder"
+
+#~ msgid "Post Media"
+#~ msgstr "Medien"
+
+#~ msgid "Add Media"
+#~ msgstr "Bilder hinzufügen"
