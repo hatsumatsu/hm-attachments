@@ -11,6 +11,16 @@ GitHub Plugin URI: https://github.com/hatsumatsu/hm-attachments
 GitHub Branch: master
 */
 
+
+/**
+ * Compatibility layer for pre-OOP versions
+ */
+require_once( 'inc/compatibility.php' );
+
+
+/**
+ * HMAttachments
+ */
 class HMAttachments {
     protected $settings;
 
