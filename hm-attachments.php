@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: HM Attachments
-Version: 0.2
+Version: 0.21
 Description: Simple post image management.
 Plugin URI:
 Author: Martin Wecke
@@ -247,6 +247,10 @@ class HMAttachments {
         }
 
         if( !current_user_can( 'edit_post' ) ) {
+            return;
+        }
+
+        if( $_REQUEST['post_ID'] != $post_id ) {
             return;
         }
 
