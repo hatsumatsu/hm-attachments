@@ -274,7 +274,7 @@ class HMAttachments {
                         'title'     => $data['title']
                     );
 
-                    add_post_meta( $post_id, 'hm-attachment', json_encode( $data, JSON_UNESCAPED_UNICODE ) );
+                    add_post_meta( $post_id, 'hm-attachment', json_encode( $data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE ) );
                 }
             }
         }
