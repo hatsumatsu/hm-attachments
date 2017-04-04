@@ -109,9 +109,9 @@ class HMAttachments {
                     'button'    => __( 'Add images', 'hm-attachments' )
                 ),
                 'infoModal'  => array(
-                    'title'     => __( 'Image details', 'hm-theme' ),
+                    'title'     => __( 'Image details', 'hm-attachments' ),
                     'fields'    => array(
-                        'title'     => __( 'Title', 'hm-theme' )
+                        'title'     => __( 'Title', 'hm-attachments' )
                     ),
                     'button'    => array(
                         'save'      => __( 'Save' )
@@ -205,9 +205,9 @@ class HMAttachments {
                             'delete'    => __( 'Delete', 'hm-attachments' )
                         ),
                         'modal'     => array(
-                            'title' => __( 'Image details', 'hm-theme' ),
+                            'title' => __( 'Image details', 'hm-attachments' ),
                             'fields' => array(
-                                'title' => __( 'Title', 'hm-theme' )
+                                'title' => __( 'Title', 'hm-attachments' )
                             ),
                             'button' => array(
                                 'save' => __( 'Save' )
@@ -230,7 +230,7 @@ class HMAttachments {
 
         // ADD NEW ITEM
         echo '<div class="hm-attachments-add">';
-        echo '<a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Add images', 'hm_attachments' ) ) . '">' . __( 'Add images', 'hm_attachments' ) . '</a>';
+        echo '<a href="#" class="hm-attachments-open-media button" title="' . esc_attr( __( 'Add images', 'hm-attachments' ) ) . '">' . __( 'Add images', 'hm-attachments' ) . '</a>';
         echo '</div>';
 
         echo '</div>';    
