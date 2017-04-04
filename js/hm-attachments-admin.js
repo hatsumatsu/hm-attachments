@@ -170,6 +170,7 @@ var hmAttachments = ( function() {
 				id:         data.id,
 				temp_id:    temp_id,
 				src:        ( data.sizes['hm-attachments-thumbnail'] ) ? data.sizes['hm-attachments-thumbnail'].url : '',
+				srcSmall:   ( data.sizes['thumbnail'] ) ? data.sizes['thumbnail'].url : '',
 				filename:   filename,
 				width:      data.width,
 				height:     data.height,

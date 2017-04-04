@@ -241,7 +241,7 @@
 
 .hm-attachments-post-info-header {
 	margin: -1em -1em 1em -1em;
-	padding: 1em 1em;
+	padding: 1em 7.25em 1em 1em;
 
 	background: #fcfcfc;
 	border-bottom: 1px solid #dddddd;
@@ -251,9 +251,34 @@
 	margin: 0;
 }
 
-.hm-attachments-post-info-header > .meta {
-	margin: 0;
-	color: #666;
+.hm-attachments-post-info-header-meta {
+	margin: 1em 0 0;
+
+	color: rgb( 142,142,142 );
+}
+
+.hm-attachments-post-info-header-meta > span {
+	display: block;
+}
+
+.hm-attachments-post-info-header-image {
+	position: absolute;
+	right: 0;
+	top: 0;
+
+	display: block;
+	width: 5.25em;
+	height: 5.25em;
+	margin: 1em;
+}
+
+.hm-attachments-post-info-header-image-image {
+	display: block;
+	float: right;
+	width: auto;
+	max-width: 100%;
+	height: auto;
+	max-height: 100%;
 }
 
 .hm-attachments-post-info-footer {

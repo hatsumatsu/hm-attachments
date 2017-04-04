@@ -184,6 +184,7 @@ class HMAttachments {
             foreach( $attachments as $attachment ) {
                 $original = wp_get_attachment_image_src( $attachment['id'], 'full' );
                 $thumbnail = wp_get_attachment_image_src( $attachment['id'], 'hm-attachments-thumbnail' );
+                $small = wp_get_attachment_image_src( $attachment['id'], 'thumbnail' );
 
                 // shorten filename if neccessary
                 $filename = basename( $original[0] );
@@ -196,6 +197,7 @@ class HMAttachments {
                 $attachment['width'] = $original[1];
                 $attachment['height'] = $original[2];
                 $attachment['src'] = $thumbnail[0];
+                $attachment['srcSmall'] = $small[0];
 
                 $data = array(
                     'attachment'    => $attachment,

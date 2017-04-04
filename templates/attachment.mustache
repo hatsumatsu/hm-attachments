@@ -18,6 +18,19 @@
 	<div class="hm-attachments-post-info">
 		<div class="hm-attachments-post-info-header">
 			<h4>{{labels.modal.title}}</h4>
+
+			<div class="hm-attachments-post-info-header-meta">
+				<span>
+					{{attachment.filename}}
+				</span>
+				<span>
+					{{attachment.width}}&thinsp;&times;&thinsp;{{attachment.height}}px
+				</span>
+			</div>
+
+			<div class="hm-attachments-post-info-header-image">
+				<img src="{{attachment.srcSmall}}" class="hm-attachments-post-info-header-image-image">
+			</div>
 		</div>
 
 		<label>{{labels.modal.fields.title}}</label>
