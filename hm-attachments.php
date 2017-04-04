@@ -254,10 +254,14 @@ class HMAttachments {
             return;
         }
 
-        if( $_REQUEST['hm-attachment'] ) {
+        if( !wp_verify_nonce( $_REQUEST['hm_attachments_nonce'], basename( __FILE__ ) ) ) {        
+            return;
+        }
 
-            // delete all data
-            delete_post_meta( $post_id, 'hm-attachment' );
+        // delete all data
+        delete_post_meta( $post_id, 'hm-attachment' );
+
+        if( $_REQUEST['hm-attachment'] ) {
 
             foreach( $_REQUEST['hm-attachment'] as $temp_id => $data ) {
 
